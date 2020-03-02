@@ -326,6 +326,11 @@ namespace LoRaWan.Test.Shared
 
         private bool disposedValue = false; // To detect redundant calls
 
+        /// <summary>
+        /// expiry time for c2d.
+        /// </summary>
+        private const int c2dExpiryTime = 5;
+
         protected virtual void Dispose(bool disposing)
         {
             TestLogger.Log($"{nameof(IntegrationTestFixtureBase)} disposed");
