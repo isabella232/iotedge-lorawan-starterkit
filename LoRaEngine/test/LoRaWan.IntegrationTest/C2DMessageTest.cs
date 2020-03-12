@@ -35,7 +35,7 @@ namespace LoRaWan.IntegrationTest
         /// <summary>
         /// Ensures that a cloud to device message has not been seen more than expected
         /// </summary>
-        /// <param name="foundCount"></param>
+        /// <param name="foundCount">foundcount.</param>
         private void EnsureNotSeenTooManyTimes(int foundCount)
         {
             Assert.True(foundCount <= CloudToDeviceMessageReceiveCountThreshold, $"Cloud to device message was processed {foundCount} times");
@@ -61,6 +61,8 @@ namespace LoRaWan.IntegrationTest
             await this.ArduinoDevice.setKeyAsync(device.NwkSKey, device.AppSKey, device.AppKey);
 
             await this.ArduinoDevice.SetupLora(this.TestFixtureCi.Configuration.LoraRegion);
+
+            await this.TestFixture.CleanupC2DDeviceQueueAsync(device.DeviceID);
 
             var joinSucceeded = await this.ArduinoDevice.setOTAAJoinAsyncWithRetry(LoRaArduinoSerial._otaa_join_cmd_t.JOIN, 20000, 5);
             Assert.True(joinSucceeded, "Join failed");
@@ -202,6 +204,8 @@ namespace LoRaWan.IntegrationTest
 
             await this.ArduinoDevice.SetupLora(this.TestFixtureCi.Configuration.LoraRegion);
 
+            await this.TestFixture.CleanupC2DDeviceQueueAsync(device.DeviceID);
+
             var joinSucceeded = await this.ArduinoDevice.setOTAAJoinAsyncWithRetry(LoRaArduinoSerial._otaa_join_cmd_t.JOIN, 20000, 5);
             Assert.True(joinSucceeded, "Join failed");
 
@@ -327,6 +331,8 @@ namespace LoRaWan.IntegrationTest
             await this.ArduinoDevice.setKeyAsync(device.NwkSKey, device.AppSKey, device.AppKey);
 
             await this.ArduinoDevice.SetupLora(this.TestFixtureCi.Configuration.LoraRegion);
+
+            await this.TestFixture.CleanupC2DDeviceQueueAsync(device.DeviceID);
 
             var joinSucceeded = await this.ArduinoDevice.setOTAAJoinAsyncWithRetry(LoRaArduinoSerial._otaa_join_cmd_t.JOIN, 20000, 5);
 
@@ -460,6 +466,8 @@ namespace LoRaWan.IntegrationTest
 
             await this.ArduinoDevice.SetupLora(this.TestFixtureCi.Configuration.LoraRegion);
 
+            await this.TestFixture.CleanupC2DDeviceQueueAsync(device.DeviceID);
+
             var joinSucceeded = await this.ArduinoDevice.setOTAAJoinAsyncWithRetry(LoRaArduinoSerial._otaa_join_cmd_t.JOIN, 20000, 5);
             Assert.True(joinSucceeded, "Join failed");
 
@@ -583,6 +591,8 @@ namespace LoRaWan.IntegrationTest
 
             // Setup protocol properties
             await this.ArduinoDevice.SetupLora(this.TestFixture.Configuration.LoraRegion);
+
+            await this.TestFixture.CleanupC2DDeviceQueueAsync(device.DeviceID);
 
             // Sends 2x unconfirmed messages
             for (var i = 1; i <= warmUpMessageCount; ++i)
