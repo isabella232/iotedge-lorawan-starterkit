@@ -1,6 +1,8 @@
 on: [push]
 
 jobs:
+
+  # Deploy IoT Edge solution to ARM gateway
   iot_edge_deploy_arm:
     env:
       CONTAINER_REGISTRY_ADDRESS: "myloramikou.azurecr.io"
@@ -44,5 +46,9 @@ jobs:
         with:
           command: deploy
           file_path: 'LoRaEngine/deployment.template.json'
+
+      - run: |
+          az extension add --name azure-cli-iot-ext     
+          until `az iot edge deployment show-metric --deployment-id $(IOT_EDGE_DEPLOYMENT_ID) --metric-id reportedSuccessfulCount --metric-type system --login $(IOTHUB_CONNECTION_STRING) | grep -q ${{ parameters.deviceID }}`; do sleep 10 && echo wait; done
 
 
