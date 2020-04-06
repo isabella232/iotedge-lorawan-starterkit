@@ -7,6 +7,8 @@ ensureEnvironmentVariableIsThere () {
     fi
 }
 
+ls
+
 ensureEnvironmentVariableIsThere "templateFilePath" "deployment.template.json"
 ensureEnvironmentVariableIsThere "defaultPlatform" "amd64"
 
