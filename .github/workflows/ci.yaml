@@ -52,7 +52,7 @@ jobs:
       FACADE_AUTH_CODE: ${{ secrets.FUNCTION_AUTH_CODE }}
       PKT_FWD_VERSION: ${{ github.run_id }}
     runs-on: ubuntu-latest
-    name: run IoT Edge Dev
+    name: Run IoT Edge Deployment on ARM gateway
     steps:  
       - name: Checkout
         uses: actions/checkout@v2
@@ -74,7 +74,7 @@ jobs:
       - name: wait for deployment complete
         run: |
           az extension add --name azure-cli-iot-ext     
-          until `az iot edge deployment show-metric --deployment-id $(IOT_EDGE_DEPLOYMENT_ID) --metric-id reportedSuccessfulCount --metric-type system --login $(IOTHUB_CONNECTION_STRING) | grep -q $(DEVICE_ID)`; do sleep 10 && echo wait; done
+          until `az iot edge deployment show-metric --deployment-id ${{ IOT_EDGE_DEPLOYMENT_ID }} --metric-id reportedSuccessfulCount --metric-type system --login ${{ IOTHUB_CONNECTION_STRING }} | grep -q ${{ DEVICE_ID }}`; do sleep 10 && echo wait; done
 
 # Runs integration tests in dedicated agent, while having modules deployed into PI (arm32v7)
   test_runner_dedicated_agent:
