@@ -9,7 +9,6 @@ jobs:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.ACR_CREDENTIALS }}
       IOTHUB_CONNECTION_STRING: ${{ secrets.IOTHUB_CONNECTION_STRING }}
       DEVICE_CONNECTION_STRING: ${{ secrets.DEVICE_CONNECTION_STRING }}
-      templateFilePath : '/github/workspace/LoRaEngine/deployment.template.json'
       IOT_EDGE_DEPLOYMENT_ID: citest
       DEVICE_ID: gateway
       NET_SRV_LOG_LEVEL: 0
@@ -37,10 +36,13 @@ jobs:
         id: edgedev_push
         with:
           command: push
+          file_path: 'LoRaEngine/deployment.template.json'
 
       - name: Iot Edge Deploy
         uses: ./devops
         id: edgedev_deploy
         with:
           command: deploy
+          file_path: 'LoRaEngine/deployment.template.json'
+
 
