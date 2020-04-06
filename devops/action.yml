@@ -7,7 +7,6 @@ inputs:
     required: true
 runs:
   using: 'docker'
-  image: 'docker://mcr.microsoft.com/iotedge/iotedgedev:latest'
-  args: 
-    - 'sudo'
-    - '/github/workspace/devops/entrypoint.sh'
+  image: 'dockerfile'
+  args:
+    - ${{ inputs.command }}
