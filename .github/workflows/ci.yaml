@@ -47,8 +47,58 @@ jobs:
           command: deploy
           file_path: 'LoRaEngine/deployment.template.json'
 
-      - run: |
+      - name: wait for deployment complete
+        run: |
           az extension add --name azure-cli-iot-ext     
-          until `az iot edge deployment show-metric --deployment-id $(IOT_EDGE_DEPLOYMENT_ID) --metric-id reportedSuccessfulCount --metric-type system --login $(IOTHUB_CONNECTION_STRING) | grep -q ${{ parameters.deviceID }}`; do sleep 10 && echo wait; done
+          until `az iot edge deployment show-metric --deployment-id $(IOT_EDGE_DEPLOYMENT_ID) --metric-id reportedSuccessfulCount --metric-type system --login $(IOTHUB_CONNECTION_STRING) | grep -q $(DEVICE_ID)`; do sleep 10 && echo wait; done
+
+# Runs integration tests in dedicated agent, while having modules deployed into PI (arm32v7)
+  test_runner_dedicated_agent:
+    name: Run tests in dedicated agent
+    strategy:
+      max-parallel: 1
+      matrix:
+        # MultiGatewayTests missing
+        testsToRun: [MacTest, OTAAJoinTest, ABPTest, OTAATest, MacTest, SensorDecodingTest, ClassCTest, C2DMessageTest]
+    needs: 
+      - iot_edge_deploy_arm
+      - full_ci_deploy_facade_function
+    runs-on: [ self-hosted, x64 ]
+    # if: env.RunTestsOnly == 'true'
+    timeout-minutes: 60
+    env:      
+      INTEGRATIONTEST_LeafDeviceSerialPort: '/dev/ttyACM0'
+      INTEGRATIONTEST_IoTHubEventHubConsumerGroup: 'reserved_integrationtest_amd'
+      INTEGRATIONTEST_LeafDeviceGatewayID: lora-device
+      INTEGRATIONTEST_DevicePrefix: '01'
+      INTEGRATIONTEST_EnsureHasEventDelayBetweenReadsInSeconds: 15
+      INTEGRATIONTEST_EnsureHasEventMaximumTries: 5
+      INTEGRATIONTEST_IoTHubConnectionString: ${{ secrets.INTEGRATIONTEST_IoTHubConnectionString }}
+      INTEGRATIONTEST_IoTHubEventHubConnectionString: ${{ secrets.INTEGRATIONTEST_IoTHubEventHubConnectionString }}
+      INTEGRATIONTEST_FunctionAppCode: ${{ secrets.INTEGRATIONTEST_FunctionAppCode }}
+      INTEGRATIONTEST_FunctionAppBaseUrl: ${{ secrets.INTEGRATIONTEST_FunctionAppBaseUrl }}
+
+    steps:
+               
+    - name: 'Configure test in **/test/LoRaWan.IntegrationTest/appsettings.json' 
+      uses: cschleiden/replace-tokens@v1
+      with:
+        files: '**/test/LoRaWan.IntegrationTest/appsettings.json'
+    
+    # Runs Integration tests
+    - name: Build IntegrationTest
+      run: dotnet build --configuration ${{ env.buildConfiguration }} **/test/LoRaWan.IntegrationTest/LoRaWan.IntegrationTest.csproj
+
+    - name: Integration testing ${{ matrix.testsToRun }}
+      # if: env.IntegrationTestsToRun == '' || contains(env.IntegrationTestsToRun, '${{ matrix.testsToRun }}')
+      run: |
+        echo ${{ matrix.testsToRun }}
+        dotnet test --logger trx --no-build --configuration ${{ env.buildConfiguration }} -p:ParallelizeTestCollections=false --filter "${{ matrix.testsToRun }}" **/test/LoRaWan.IntegrationTest/LoRaWan.IntegrationTest.csproj
+    
+    # Upload test results as artifact
+    - uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.testsToRun }}-results
+        path: LoRaEngine/test/LoRaWan.IntegrationTest/TestResults
 
 
