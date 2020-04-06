@@ -2,6 +2,32 @@ on: [push]
 
 jobs:
 
+   # Build and deploy Facade Azure Function 
+  deploy_facade_function:
+    name: Build and deploy Facade Azure Function   
+    needs: build_and_test
+    runs-on: ubuntu-16.04
+    env:
+      AZURE_FUNCTIONAPP_NAME: ms-lora-function-app
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: 'LoRaEngine/LoraKeysManagerFacade/'
+
+    steps:
+       - uses: actions/checkout@v2     
+       - name: 'Resolve Project Dependencies Using Dotnet'
+         shell: bash
+         run: |
+           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+           dotnet build --configuration Release --output ./output
+           popd
+           
+       - name: 'Run Azure Functions Action'
+         uses: Azure/functions-action@v1
+         id: fa
+         with:
+           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+
   # Deploy IoT Edge solution to ARM gateway
   iot_edge_deploy_arm:
     env:
@@ -62,7 +88,7 @@ jobs:
         testsToRun: [MacTest, OTAAJoinTest, ABPTest, OTAATest, MacTest, SensorDecodingTest, ClassCTest, C2DMessageTest]
     needs: 
       - iot_edge_deploy_arm
-      - full_ci_deploy_facade_function
+      - deploy_facade_function
     runs-on: [ self-hosted, x64 ]
     # if: env.RunTestsOnly == 'true'
     timeout-minutes: 60
