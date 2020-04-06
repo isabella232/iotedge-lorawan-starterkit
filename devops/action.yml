@@ -10,6 +10,4 @@ runs:
   image: 'docker://mcr.microsoft.com/iotedge/iotedgedev:latest'
   args: 
     - 'sudo'
-    - 'sh'
-    - '-c' 
     - '/github/workspace/devops/entrypoint.sh'
