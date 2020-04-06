@@ -1,0 +1,46 @@
+on: [push]
+
+jobs:
+  iot_edge_deploy_arm:
+    env:
+      CONTAINER_REGISTRY_ADDRESS: "myloramikou.azurecr.io"
+      CONTAINER_REGISTRY_SERVER: "myloramikou.azurecr.io"
+      CONTAINER_REGISTRY_USERNAME: "myloramikou"
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.ACR_CREDENTIALS }}
+      IOTHUB_CONNECTION_STRING: ${{ secrets.IOTHUB_CONNECTION_STRING }}
+      DEVICE_CONNECTION_STRING: ${{ secrets.DEVICE_CONNECTION_STRING }}
+      templateFilePath : 'LoRaEngine/deployment.template.json'
+      IOT_EDGE_DEPLOYMENT_ID: citest
+      DEVICE_ID: gateway
+      NET_SRV_LOG_LEVEL: 0
+      NET_SRV_LOGTO_HUB: true
+      NET_SRV_LOGTO_UDP: false
+      NET_SRV_IOTEDGE_TIMEOUT: 1000
+      NET_SRV_LOG_TO_UDP_ADDRESS: "192.168.1.1"
+      EDGEHUB_ROUTE: "FROM /* INTO $upstream"
+      RESET_PIN: 7
+      REGION: "EU"
+      PKT_FWD_SPI_SPEED: 1500
+      PKT_FWD_SPI_DEV: 2
+      FACADE_SERVER_URL: "https://lora-function-app.azurewebsites.net/api/"
+      NET_SRV_VERSION: ${{ github.run_id }}
+      FACADE_AUTH_CODE: ${{ secrets.FUNCTION_AUTH_CODE }}
+      PKT_FWD_VERSION: ${{ github.run_id }}
+    runs-on: ubuntu-latest
+    name: run IoT Edge Dev
+    steps:  
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Iot Edge Push Solution
+        uses: ./devops
+        id: edgedev_push
+        with:
+          command: push
+
+      - name: Iot Edge Deploy
+        uses: ./devops
+        id: edgedev_deploy
+        with:
+          command: deploy
+
