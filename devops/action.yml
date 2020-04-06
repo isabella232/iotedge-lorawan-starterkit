@@ -8,4 +8,4 @@ inputs:
 runs:
   using: 'docker'
   image: 'docker://mcr.microsoft.com/iotedge/iotedgedev:latest'
-  entrypoint: "ls devops"
+  entrypoint: 'sudo sh -c $GITHUB_WORKSPACE/devops/entrypoint.sh'
