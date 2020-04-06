@@ -8,4 +8,8 @@ inputs:
 runs:
   using: 'docker'
   image: 'docker://mcr.microsoft.com/iotedge/iotedgedev:latest'
-  entrypoint: 'sudo sh -c /github/workspace/devops/entrypoint.sh'
+  args: 
+    - 'sudo'
+    - 'sh'
+    - '-c' 
+    - '/github/workspace/devops/entrypoint.sh'
