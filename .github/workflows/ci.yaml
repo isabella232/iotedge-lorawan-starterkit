@@ -9,7 +9,7 @@ jobs:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.ACR_CREDENTIALS }}
       IOTHUB_CONNECTION_STRING: ${{ secrets.IOTHUB_CONNECTION_STRING }}
       DEVICE_CONNECTION_STRING: ${{ secrets.DEVICE_CONNECTION_STRING }}
-      templateFilePath : 'LoRaEngine/deployment.template.json'
+      templateFilePath : '/github/workspace/LoRaEngine/deployment.template.json'
       IOT_EDGE_DEPLOYMENT_ID: citest
       DEVICE_ID: gateway
       NET_SRV_LOG_LEVEL: 0

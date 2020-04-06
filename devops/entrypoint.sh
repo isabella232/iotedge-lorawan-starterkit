@@ -7,7 +7,7 @@ ensureEnvironmentVariableIsThere () {
     fi
 }
 
-ls
+echo $templateFilePath
 
 ensureEnvironmentVariableIsThere "templateFilePath" "deployment.template.json"
 ensureEnvironmentVariableIsThere "defaultPlatform" "amd64"
