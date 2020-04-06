@@ -8,4 +8,4 @@ inputs:
 runs:
   using: 'docker'
   image: 'docker://mcr.microsoft.com/iotedge/iotedgedev:latest'
-  entrypoint: "ls"
+  entrypoint: "devops/entrypoint.sh"
