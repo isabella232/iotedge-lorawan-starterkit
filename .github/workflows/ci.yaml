@@ -101,7 +101,7 @@ jobs:
     env:      
       INTEGRATIONTEST_LeafDeviceSerialPort: '/dev/ttyACM0'
       INTEGRATIONTEST_IoTHubEventHubConsumerGroup: 'reserved_integrationtest_amd'
-      INTEGRATIONTEST_LeafDeviceGatewayID: lora-device
+      INTEGRATIONTEST_LeafDeviceGatewayID: gateway
       INTEGRATIONTEST_DevicePrefix: '01'
       INTEGRATIONTEST_EnsureHasEventDelayBetweenReadsInSeconds: 15
       INTEGRATIONTEST_EnsureHasEventMaximumTries: 5
