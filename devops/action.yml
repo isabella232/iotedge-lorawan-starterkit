@@ -18,3 +18,4 @@ runs:
   args:
     - ${{ inputs.command }}
     - ${{ inputs.file_path }}
+    - ${{ inputs.target_platform }}
