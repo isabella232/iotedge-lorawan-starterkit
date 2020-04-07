@@ -3,12 +3,15 @@ name: 'IoT Edge Dev'
 description: 'Iot Edge cli'
 inputs:
   command:
-    description: 'the command to run'
+    description: 'The command to run'
     required: true
   file_path:
-    description: 'file path of the manifest file'
+    description: 'File path of the manifest file'
     required: false
     default: 'deployment.template.json'
+  target_platform: 
+    description: 'Platform to target'
+    required: false
 runs:
   using: 'docker'
   image: 'dockerfile'
