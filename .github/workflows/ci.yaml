@@ -3,7 +3,7 @@ on: [push]
 jobs:
    # Build and deploy Facade Azure Function 
   deploy_facade_function:
-    name: Build and deploy Facade Azure Function   
+    name: Build and Deploy Facade Azure Function   
     runs-on: ubuntu-16.04
     env:
       AZURE_FUNCTIONAPP_NAME: ms-lora-function-app
@@ -37,7 +37,7 @@ jobs:
       DEVICE_CONNECTION_STRING: ${{ secrets.DEVICE_CONNECTION_STRING }}
       IOT_EDGE_DEPLOYMENT_ID: citest
       DEVICE_ID: gateway
-      NET_SRV_LOG_LEVEL: 0
+      NET_SRV_LOG_LEVEL: 1
       NET_SRV_LOGTO_HUB: true
       NET_SRV_LOGTO_UDP: false
       NET_SRV_IOTEDGE_TIMEOUT: 1000
@@ -45,8 +45,6 @@ jobs:
       EDGEHUB_ROUTE: "FROM /* INTO $upstream"
       RESET_PIN: 7
       REGION: "EU"
-      PKT_FWD_SPI_SPEED: 1500
-      PKT_FWD_SPI_DEV: 2
       FACADE_SERVER_URL: "https://lora-function-app.azurewebsites.net/api/"
       NET_SRV_VERSION: ${{ github.run_id }}
       FACADE_AUTH_CODE: ${{ secrets.FUNCTION_AUTH_CODE }}
