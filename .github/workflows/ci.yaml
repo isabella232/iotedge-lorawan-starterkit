@@ -73,7 +73,7 @@ jobs:
           command: deploy
           file_path: 'LoRaEngine/deployment.template.json'
         env:
-          defaultPlatform: 'ARM'
+          defaultPlatform: 'arm'
 
       - name: Wait for IoT Edge Deployment
         run: |
