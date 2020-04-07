@@ -49,6 +49,12 @@ jobs:
       NET_SRV_VERSION: ${{ github.run_id }}
       FACADE_AUTH_CODE: ${{ secrets.FUNCTION_AUTH_CODE }}
       PKT_FWD_VERSION: ${{ github.run_id }}
+      EDGE_AGENT_VERSION: 1.0.9
+      EDGE_HUB_VERSION: 1.0.9
+      EDGEHUB_OPTIMIZEFORPERFORMANCE: false
+      EDGEHUB_MQTTSETTINGS_ENABLED: false
+      EDGEHUB_HTTPSETTINGS_ENABLED: false
+      BUILD_BUILDID: ${{ github.run_id }}
     runs-on: ubuntu-latest
     name: Run IoT Edge Deployment on ARM gateway
     steps:  
