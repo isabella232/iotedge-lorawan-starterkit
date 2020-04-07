@@ -41,7 +41,7 @@ jobs:
       NET_SRV_LOGTO_HUB: true
       NET_SRV_LOGTO_UDP: false
       NET_SRV_IOTEDGE_TIMEOUT: 1000
-      NET_SRV_LOG_TO_UDP_ADDRESS: "linux-xps15"
+      NET_SRV_LOG_TO_UDP_ADDRESS: "192.168.0.41"
       EDGEHUB_ROUTE: "FROM /* INTO $upstream"
       RESET_PIN: 7
       REGION: "EU"
