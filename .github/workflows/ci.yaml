@@ -63,6 +63,8 @@ jobs:
         with:
           command: push
           file_path: 'LoRaEngine/deployment.template.json'
+        env:
+          defaultPlatform: 'ARM'
 
       - name: Iot Edge Deploy
         uses: ./devops
@@ -70,6 +72,8 @@ jobs:
         with:
           command: deploy
           file_path: 'LoRaEngine/deployment.template.json'
+        env:
+          defaultPlatform: 'ARM'
 
       - name: Wait for IoT Edge Deployment
         run: |
