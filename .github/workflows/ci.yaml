@@ -38,8 +38,8 @@ jobs:
       IOT_EDGE_DEPLOYMENT_ID: citest
       DEVICE_ID: gateway
       NET_SRV_LOG_LEVEL: 1
-      NET_SRV_LOGTO_HUB: true
-      NET_SRV_LOGTO_UDP: false
+      NET_SRV_LOGTO_HUB: false
+      NET_SRV_LOGTO_UDP: true
       NET_SRV_IOTEDGE_TIMEOUT: 0
       NET_SRV_LOG_TO_UDP_ADDRESS: "192.168.0.41"
       EDGEHUB_ROUTE: "FROM /* INTO $upstream"
@@ -85,7 +85,7 @@ jobs:
           until `az iot edge deployment show-metric --deployment-id ${{ env.IOT_EDGE_DEPLOYMENT_ID }} --metric-id reportedSuccessfulCount --metric-type system --login '${{ secrets.IOTHUB_CONNECTION_STRING }}' | grep -q ${{ env.DEVICE_ID }}`; do sleep 10 && echo wait; done
 
 # Runs integration tests in dedicated agent, while having modules deployed into PI (arm32v7)
-  test_runner_dedicated_agent:
+  integration_test_ :
     name: Run tests in dedicated agent
     strategy:
       max-parallel: 1
