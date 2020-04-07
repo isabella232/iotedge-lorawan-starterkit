@@ -60,7 +60,8 @@ jobs:
         id: edgedev_push
         with:
           command: push
-          file_path: 'LoRaEngine/deployment.test.template.json'
+          folder_path: 'LoRaEngine'
+          file_name: 'deployment.test.template.json'
           target_platform: 'arm32v7'
 
       - name: Iot Edge Deploy
@@ -68,7 +69,8 @@ jobs:
         id: edgedev_deploy
         with:
           command: deploy
-          file_path: 'LoRaEngine/deployment.test.template.json'
+          folder_path: 'LoRaEngine'
+          file_name: 'deployment.test.template.json'
           target_platform: 'arm32v7'
 
       - name: Wait for IoT Edge Deployment

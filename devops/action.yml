@@ -5,10 +5,12 @@ inputs:
   command:
     description: 'The command to run'
     required: true
-  file_path:
+  file_name:
     description: 'File path of the manifest file'
-    required: false
-    default: 'deployment.template.json'
+    required: true
+  folder_path:
+    description: 'Folder path of the manifest file'
+    required: true
   target_platform: 
     description: 'Platform to target'
     required: false
@@ -17,5 +19,6 @@ runs:
   image: 'dockerfile'
   args:
     - ${{ inputs.command }}
-    - ${{ inputs.file_path }}
+    - ${{ inputs.folder_path }}
+    - ${{ inputs.file_name }}
     - ${{ inputs.target_platform }}
