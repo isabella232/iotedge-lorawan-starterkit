@@ -238,7 +238,7 @@ jobs:
       if: steps.integration_test.conclusion == 'Success'
       with:
         token: ${{secrets.GITHUB_TOKEN}}
-        labels: ${{ matrix.testsToRun }}
+        label: ${{ matrix.testsToRun }}
         type: remove
 
 
