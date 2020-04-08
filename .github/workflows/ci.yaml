@@ -161,7 +161,7 @@ jobs:
         # MultiGatewayTests, MacTest missing
         testsToRun: [ OTAAJoinTest, ABPTest, OTAATest, MacTest, SensorDecodingTest, ClassCTest, C2DMessageTest]
     needs: 
-      - iot_edge_deploy_arm
+      - deploy_arm_gw_iot_edge
       - deploy_facade_function
     runs-on: [ self-hosted, x64 ]
     timeout-minutes: 60
