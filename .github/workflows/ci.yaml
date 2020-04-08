@@ -231,7 +231,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: ${{ matrix.testsToRun }}
-        conclusion: neutral
+        conclusion: cancelled
     
     - name: removelabel
       uses: buildsville/add-remove-label@v1
