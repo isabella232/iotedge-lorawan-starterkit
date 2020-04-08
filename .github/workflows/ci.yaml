@@ -220,19 +220,12 @@ jobs:
     #     echo ${{ tojson(steps.integration_test) }}
     #     echo ${{ steps.integration_test.status }}
     - uses: LouisBrunner/checks-action@v0.1.0
-      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
+      if: always()
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: ${{ matrix.testsToRun }}
-        conclusion: ${{ steps.integration_test.conclusion }}
+        conclusion: ${{ job.conclusion }}
 
-    - uses: LouisBrunner/checks-action@v0.1.0
-      if: ${{ !contains(github.event.pull_request.labels.*.name, matrix.testsToRun) }}
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        name: ${{ matrix.testsToRun }}
-        conclusion: cancelled
-    
     - name: removelabel
       uses: buildsville/add-remove-label@v1
       if: steps.integration_test.conclusion == 'Success'
