@@ -216,7 +216,7 @@ jobs:
         path: LoRaEngine/test/LoRaWan.IntegrationTest/TestResults
 
     - run: |
-        echo ${{ steps.integration_test }}
+        echo ${{ tojson(steps.integration_test) }}
         echo ${{ steps.integration_test.status }}
     - uses: LouisBrunner/checks-action@v0.1.0
       if: always()
