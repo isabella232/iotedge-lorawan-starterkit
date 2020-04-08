@@ -187,6 +187,7 @@ jobs:
       if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') && contains(github.event.pull_request.labels.*.name,  matrix.testsToRun) }}
 
     - name: Checkout
+      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
       uses: actions/checkout@v2
 
     - name: 'Configure test in **/test/LoRaWan.IntegrationTest/appsettings.json' 
