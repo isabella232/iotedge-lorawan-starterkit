@@ -1,10 +1,72 @@
 on: [push]
 
+env: 
+  env.RunTestsOnly: true
+
 jobs:
-   # Build and deploy Facade Azure Function 
+ build_and_test:
+    name: Build and Test Solution
+    runs-on: ubuntu-16.04
+    if: env.RunTestsOnly != true
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+      
+    # build LoRa Engine
+    - name: Build LoRa Engine
+      run: dotnet build --configuration ${{ env.buildConfiguration }} LoRaEngine/LoRaEngine.sln
+
+    # build C# Samples/DecoderSample
+    - name: Build C# Samples/DecoderSample
+      run: dotnet build --configuration ${{ env.buildConfiguration }} Samples/DecoderSample 
+
+    # build LoRa Simulator
+    - name: Build LoRa Simulator
+      run: dotnet build --configuration ${{ env.buildConfiguration }} LoRaEngine/modules/LoRaSimulator/LoRaSimulator.sln
+
+    # Pull Redis Cache docker image
+    - name: Pulling Redis Cache image
+      run: docker pull redis:5.0.4-alpine
+
+    # Run unit tests
+    - name: Run unit tests
+      run: |
+        mkdir $(Build.SourcesDirectory)\results
+        dotnet test --logger trx LoRaEngine/test/LoRaWanNetworkServer.Test/*.csproj -r LoRaEngine/test/TestResults/  &&  dotnet test --logger trx LoRaEngine/modules/LoRaWanNetworkSrvModule/LoRaToolsTest/*.csproj -r LoRaEngine/test/TestResults/ && dotnet test --logger trx LoRaEngine/test/LoraKeysManagerFacade.Test/*.csproj -r LoRaEngine/test/TestResults/
+   
+    # - run: mkdir -p LoRaEngine/test/TestResults/
+   
+    # Upload test results as artifact
+    - uses: actions/upload-artifact@v1
+      with:
+        name: unit-test-results
+        path: LoRaEngine/test/TestResults
+   
+    # Find out if full ci is enabled for Pull Request validation
+    - name: Check for CI label build on PR
+      id: check-label
+      run: |
+        echo "::set-output name=label::abcde" 
+        echo "Looking for label at https://api.github.com/repos/$BUILD_REPOSITORY_ID/issues/$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER/labels"
+        if curl -s "https://api.github.com/repos/$BUILD_REPOSITORY_ID/issues/$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER/labels" | grep '"name": "fullci"'
+        then
+          echo "::set-output name=prWithCILabel::true"       
+          echo "fullci label found!"
+        fi
+      if: github.event_name == 'pull_request'
+   
+    - name: Check label
+      env:
+        label: ${{ steps.check-label.outputs.label }}
+      run: |
+        echo "Label:  " 
+        echo ${{ env.label }}
+   
+  # Build and deploy Facade Azure Function 
   deploy_facade_function:
     name: Build and Deploy Facade Azure Function   
     runs-on: ubuntu-16.04
+    if: env.RunTestsOnly != true
     env:
       AZURE_FUNCTIONAPP_NAME: ms-lora-function-app
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'LoRaEngine/LoraKeysManagerFacade/'
@@ -27,7 +89,8 @@ jobs:
            publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 
   # Deploy IoT Edge solution to ARM gateway
-  iot_edge_deploy_arm:
+  deploy_arm_gw_iot_edge:
+    if: env.RunTestsOnly != true
     env:
       CONTAINER_REGISTRY_ADDRESS: "myloramikou.azurecr.io"
       CONTAINER_REGISTRY_SERVER: "myloramikou.azurecr.io"
@@ -82,7 +145,7 @@ jobs:
       - name: Wait for IoT Edge Deployment
         run: |
           az extension add --name azure-cli-iot-ext     
-          until `az iot edge deployment show-metric --deployment-id ${{ env.IOT_EDGE_DEPLOYMENT_ID }} --metric-id reportedSuccessfulCount --metric-type system --login '${{ secrets.IOTHUB_CONNECTION_STRING }}' | grep -q ${{ env.DEVICE_ID }}`; do sleep 10 && echo wait; done
+          until `az iot edge deployment show-metric ${{ github. }} --deployment-id ${{ env.IOT_EDGE_DEPLOYMENT_ID }} --metric-id reportedSuccessfulCount --metric-type system --login '${{ secrets.IOTHUB_CONNECTION_STRING }}' | grep -q ${{ env.DEVICE_ID }}`; do sleep 10 && echo wait; done
 
 # Runs integration tests in dedicated agent, while having modules deployed into PI (arm32v7)
   integration_test_ :
@@ -90,13 +153,12 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        # MultiGatewayTests missing
-        testsToRun: [MacTest, OTAAJoinTest, ABPTest, OTAATest, MacTest, SensorDecodingTest, ClassCTest, C2DMessageTest]
+        # MultiGatewayTests, MacTest missing
+        testsToRun: [ OTAAJoinTest, ABPTest, OTAATest, MacTest, SensorDecodingTest, ClassCTest, C2DMessageTest]
     needs: 
       - iot_edge_deploy_arm
       - deploy_facade_function
     runs-on: [ self-hosted, x64 ]
-    # if: env.RunTestsOnly == 'true'
     timeout-minutes: 60
     env:      
       INTEGRATIONTEST_LeafDeviceSerialPort: '/dev/ttyACM0'
@@ -125,6 +187,7 @@ jobs:
       run: dotnet build --configuration ${{ env.buildConfiguration }} **/test/LoRaWan.IntegrationTest/LoRaWan.IntegrationTest.csproj
 
     - name: Integration testing ${{ matrix.testsToRun }}
+      id: integration_test
       # if: env.IntegrationTestsToRun == '' || contains(env.IntegrationTestsToRun, '${{ matrix.testsToRun }}')
       run: |
         echo ${{ matrix.testsToRun }}
@@ -135,5 +198,15 @@ jobs:
       with:
         name: ${{ matrix.testsToRun }}-results
         path: LoRaEngine/test/LoRaWan.IntegrationTest/TestResults
+
+    - uses: LouisBrunner/checks-action@v0.1.0
+      if: always()
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: "${{ matrix.testsToRun }}"
+        conclusion: ${{ job }}
+        output:
+          summary: "${{ matrix.testsToRun }}"
+          #text_description: ${{ steps.test.outputs.description }}
 
 
