@@ -215,11 +215,11 @@ jobs:
         name: ${{ matrix.testsToRun }}-results
         path: LoRaEngine/test/LoRaWan.IntegrationTest/TestResults
 
-    - run: |
-        echo ${{ tojson(steps.integration_test) }}
-        echo ${{ steps.integration_test.status }}
+    # - run: |
+    #     echo ${{ tojson(steps.integration_test) }}
+    #     echo ${{ steps.integration_test.status }}
     - uses: LouisBrunner/checks-action@v0.1.0
-      if: always()
+      if: success()
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: ${{ matrix.testsToRun }}
