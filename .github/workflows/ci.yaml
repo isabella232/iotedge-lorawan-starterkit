@@ -186,6 +186,9 @@ jobs:
     #     echo "::set-output name=action_fruit::t"
     #     echo github.event.pull_request.labels.*.name
 
+    - run: |
+      ${{ github.issues.addLabels({...context.issue, labels: ['bug']}) }}
+
     - name: Checkout
       if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
       uses: actions/checkout@v2
