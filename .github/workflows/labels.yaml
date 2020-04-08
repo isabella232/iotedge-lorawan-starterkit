@@ -15,6 +15,6 @@ jobs:
       if: contains(github.event.pull_request.labels.*.name, 'fullci')
       with:
         token: ${{secrets.GITHUB_TOKEN}}
-        label: ${{ matrix.testsToRun }}
+        label: ${{ matrix.labelToAdd }}
         type: add
 
