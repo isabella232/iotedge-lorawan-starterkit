@@ -1,10 +1,15 @@
-on: [push]
+on: # rebuild any PRs and main branch changes
+  pull_request:
+  push:
+    branches:
+      - master
+      - 'releases/*'
 
 env: 
   env.RunTestsOnly: true
 
 jobs:
- build_and_test:
+  build_and_test:
     name: Build and Test Solution
     runs-on: ubuntu-16.04
     if: env.RunTestsOnly != true
@@ -62,7 +67,7 @@ jobs:
         echo "Label:  " 
         echo ${{ env.label }}
    
-  # Build and deploy Facade Azure Function 
+  # Build and deploy Facade Azure Function
   deploy_facade_function:
     name: Build and Deploy Facade Azure Function   
     runs-on: ubuntu-16.04
