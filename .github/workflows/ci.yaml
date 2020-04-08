@@ -181,8 +181,9 @@ jobs:
       INTEGRATIONTEST_FunctionAppBaseUrl: "https://lora-function-app.azurewebsites.net/api/"
 
     steps:
-    - run: echo github.event.pull_request.labels.*.name
-    
+    - run: |
+        echo github.event.pull_request.labels.*.name
+
     - name: Checkout
       uses: actions/checkout@v2
 
