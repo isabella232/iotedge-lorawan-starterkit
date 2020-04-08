@@ -181,10 +181,10 @@ jobs:
       INTEGRATIONTEST_FunctionAppBaseUrl: "https://lora-function-app.azurewebsites.net/api/"
 
     steps:
-    - name: Gatekeeper
-      run: |
-        echo github.event.pull_request.labels.*.name
-      if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') && contains(github.event.pull_request.labels.*.name,  matrix.testsToRun) }}
+    # - name: Gatekeeper
+    #   run: |
+    #     echo "::set-output name=action_fruit::t"
+    #     echo github.event.pull_request.labels.*.name
 
     - name: Checkout
       if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
@@ -220,7 +220,7 @@ jobs:
     #     echo ${{ tojson(steps.integration_test) }}
     #     echo ${{ steps.integration_test.status }}
     - uses: LouisBrunner/checks-action@v0.1.0
-      if: success()
+      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: ${{ matrix.testsToRun }}
