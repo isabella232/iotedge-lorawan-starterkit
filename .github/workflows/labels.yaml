@@ -1,6 +1,6 @@
 on:
-  label:
-    types: [created]
+  pull_request: 
+    types: [labeled]
 jobs:
   add_label:
     name: Add labels
