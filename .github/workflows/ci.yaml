@@ -16,7 +16,11 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-      
+    
+    - run: |
+        echo ${{ github.event.pull_request.labels.*.name }}
+        echo ${{ !contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') }}
+
     # build LoRa Engine
     - name: Build LoRa Engine
       run: dotnet build --configuration ${{ env.buildConfiguration }} LoRaEngine/LoRaEngine.sln
