@@ -6,13 +6,13 @@ on: # rebuild any PRs and main branch changes
       - 'releases/*'
 
 env: 
-  env.RunTestsOnly: true
+  RunTestsOnly: true
 
 jobs:
   build_and_test:
     name: Build and Test Solution
     runs-on: ubuntu-16.04
-    if: ${{ env.RunTestsOnly }} != true
+    if: env.RunTestsOnly != true
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -71,7 +71,7 @@ jobs:
   deploy_facade_function:
     name: Build and Deploy Facade Azure Function   
     runs-on: ubuntu-16.04
-    if: ${{ env.RunTestsOnly }} != true
+    if: env.RunTestsOnly != true
     env:
       AZURE_FUNCTIONAPP_NAME: ms-lora-function-app
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'LoRaEngine/LoraKeysManagerFacade/'
@@ -95,7 +95,7 @@ jobs:
 
   # Deploy IoT Edge solution to ARM gateway
   deploy_arm_gw_iot_edge:
-    if: ${{ env.RunTestsOnly }} != true
+    if: env.RunTestsOnly != true
     env:
       CONTAINER_REGISTRY_ADDRESS: "myloramikou.azurecr.io"
       CONTAINER_REGISTRY_SERVER: "myloramikou.azurecr.io"
