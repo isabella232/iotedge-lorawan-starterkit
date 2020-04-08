@@ -182,7 +182,7 @@ jobs:
     steps:
     - name: Check label
       run: |
-        echo ${{ contains(github.event.pull_request.labels.*.name, ${{ matrix.testsToRun }}) }}
+        echo ${{ contains(github.event.pull_request.labels.*.name, matrix.testsToRun) }}
         exit 78
 
     - name: Checkout
