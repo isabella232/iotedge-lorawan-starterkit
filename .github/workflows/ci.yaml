@@ -16,10 +16,6 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    
-    - run: |
-        echo ${{ github.event.pull_request.labels.*.name }}
-        echo ${{ !contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') }}
 
     # build LoRa Engine
     - name: Build LoRa Engine
@@ -99,7 +95,6 @@ jobs:
 
   # Deploy IoT Edge solution to ARM gateway
   deploy_arm_gw_iot_edge:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') }}
     env:
       CONTAINER_REGISTRY_ADDRESS: "myloramikou.azurecr.io"
       CONTAINER_REGISTRY_SERVER: "myloramikou.azurecr.io"
