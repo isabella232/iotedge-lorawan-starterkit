@@ -225,6 +225,13 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: ${{ matrix.testsToRun }}
         conclusion: ${{ steps.integration_test.conclusion }}
+
+    - uses: LouisBrunner/checks-action@v0.1.0
+      if: ${{ !contains(github.event.pull_request.labels.*.name, matrix.testsToRun) }}
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: ${{ matrix.testsToRun }}
+        conclusion: neutral
     
     - name: removelabel
       uses: buildsville/add-remove-label@v1
