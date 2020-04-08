@@ -223,6 +223,6 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: ${{ matrix.testsToRun }}
-        conclusion: ${{ steps.integration_test.status }}
+        conclusion: ${{ steps.integration_test.conclusion }}
 
 
