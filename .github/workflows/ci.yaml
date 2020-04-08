@@ -166,7 +166,7 @@ jobs:
       - deploy_facade_function
     runs-on: [ self-hosted, x64 ]
     timeout-minutes: 60
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') }}
+    if: always()
     env:      
       INTEGRATIONTEST_LeafDeviceSerialPort: '/dev/ttyACM0'
       INTEGRATIONTEST_IoTHubEventHubConsumerGroup: 'reserved_integrationtest_amd'
