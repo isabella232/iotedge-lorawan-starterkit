@@ -166,6 +166,7 @@ jobs:
       - deploy_facade_function
     runs-on: [ self-hosted, x64 ]
     timeout-minutes: 60
+    if: always()
     #if: contains(github.event.pull_request.labels.*.name, 'FullCi')
     env:      
       INTEGRATIONTEST_LeafDeviceSerialPort: '/dev/ttyACM0'
