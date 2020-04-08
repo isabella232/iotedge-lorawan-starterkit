@@ -209,7 +209,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: "${{ matrix.testsToRun }}"
-        conclusion: ${{ job }}
+        conclusion: ${{ job.status }}
         # output:
         #   summary: 'this is a description'
           #text_description: ${{ steps.test.outputs.description }}
