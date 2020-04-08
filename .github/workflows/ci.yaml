@@ -181,27 +181,24 @@ jobs:
       INTEGRATIONTEST_FunctionAppBaseUrl: "https://lora-function-app.azurewebsites.net/api/"
 
     steps:
-    - name: Check label
-      run: |
-        echo ${{ github.event.pull_request.labels.*.name }}
-        echo ${{ contains(github.event.pull_request.labels.*.name, 'FullCi') }}
-        echo ${{ contains(github.event.pull_request.labels.*.name, matrix.testsToRun) }}
-        exit 78
 
     - name: Checkout
       uses: actions/checkout@v2
 
     - name: 'Configure test in **/test/LoRaWan.IntegrationTest/appsettings.json' 
       uses: cschleiden/replace-tokens@v1
+      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
       with:
         files: '**/test/LoRaWan.IntegrationTest/appsettings.json'
     
     # Runs Integration tests
     - name: Build IntegrationTest
+      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
       run: dotnet build --configuration ${{ env.buildConfiguration }} **/test/LoRaWan.IntegrationTest/LoRaWan.IntegrationTest.csproj
 
     - name: Integration testing ${{ matrix.testsToRun }}
       id: integration_test
+      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
       # if: env.IntegrationTestsToRun == '' || contains(env.IntegrationTestsToRun, '${{ matrix.testsToRun }}')
       run: |
         echo ${{ matrix.testsToRun }}
@@ -209,6 +206,7 @@ jobs:
     
     # Upload test results as artifact
     - uses: actions/upload-artifact@v1
+      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
       with:
         name: ${{ matrix.testsToRun }}-results
         path: LoRaEngine/test/LoRaWan.IntegrationTest/TestResults
