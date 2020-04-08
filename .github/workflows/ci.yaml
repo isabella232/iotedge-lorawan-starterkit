@@ -181,8 +181,10 @@ jobs:
       INTEGRATIONTEST_FunctionAppBaseUrl: "https://lora-function-app.azurewebsites.net/api/"
 
     steps:
-    - run: |
+    - name: Gatekeeper
+      run: |
         echo github.event.pull_request.labels.*.name
+      if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') && contains(github.event.pull_request.labels.*.name,  matrix.testsToRun }}
 
     - name: Checkout
       uses: actions/checkout@v2
@@ -218,6 +220,6 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: ${{ matrix.testsToRun }}
-        conclusion: ${{ steps.integration_test.status }}
+        conclusion: ${{ job.steps.integration_test.status }}
 
 
