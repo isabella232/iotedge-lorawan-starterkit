@@ -184,7 +184,7 @@ jobs:
     - name: Gatekeeper
       run: |
         echo github.event.pull_request.labels.*.name
-      if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') && contains(github.event.pull_request.labels.*.name,  matrix.testsToRun }}
+      if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') && contains(github.event.pull_request.labels.*.name,  matrix.testsToRun) }}
 
     - name: Checkout
       uses: actions/checkout@v2
