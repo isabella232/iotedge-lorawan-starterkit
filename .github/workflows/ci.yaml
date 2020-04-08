@@ -209,10 +209,7 @@ jobs:
       if: always()
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        name: "${{ matrix.testsToRun }}"
+        name: ${{ matrix.testsToRun }}
         conclusion: ${{ job.status }}
-        # output:
-        #   summary: 'this is a description'
-          #text_description: ${{ steps.test.outputs.description }}
 
 
