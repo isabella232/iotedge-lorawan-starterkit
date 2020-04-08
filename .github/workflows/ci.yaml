@@ -164,7 +164,7 @@ jobs:
     needs: 
       - deploy_arm_gw_iot_edge
       - deploy_facade_function
-    runs-on: [ self-hosted, x64 ]
+    runs-on: [ self-hosted ]
     timeout-minutes: 60
     if: always()
     #if: contains(github.event.pull_request.labels.*.name, 'FullCi')
