@@ -150,7 +150,7 @@ jobs:
       - name: Wait for IoT Edge Deployment
         run: |
           az extension add --name azure-cli-iot-ext     
-          until `az iot edge deployment show-metric ${{ github. }} --deployment-id ${{ env.IOT_EDGE_DEPLOYMENT_ID }} --metric-id reportedSuccessfulCount --metric-type system --login '${{ secrets.IOTHUB_CONNECTION_STRING }}' | grep -q ${{ env.DEVICE_ID }}`; do sleep 10 && echo wait; done
+          until `az iot edge deployment show-metric --deployment-id ${{ env.IOT_EDGE_DEPLOYMENT_ID }} --metric-id reportedSuccessfulCount --metric-type system --login '${{ secrets.IOTHUB_CONNECTION_STRING }}' | grep -q ${{ env.DEVICE_ID }}`; do sleep 10 && echo wait; done
 
 # Runs integration tests in dedicated agent, while having modules deployed into PI (arm32v7)
   integration_test_ :
