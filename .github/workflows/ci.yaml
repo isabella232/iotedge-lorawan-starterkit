@@ -11,14 +11,14 @@ on: # rebuild any PRs and main branch changes
 
 env: 
   buildConfiguration: "Release"
-  RunTestsOnly: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }}
+  RunTestsOnly: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }} || ${{ github.event_name == 'push' }}
   FullCi: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') }} || ${{ contains(github.event.client_payload.labels.*.name, 'fullci') }} || ${{ github.event_name == 'push' }}
 jobs:
   build_and_test:
     name: Build and Test Solution
     runs-on: ubuntu-16.04
     # env.RunTestsOnly == 'false'
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }} || ${{ github.event_name == 'push' }}
     steps:
     - uses: actions/checkout@v2
       name: Checkout branch pointed by dispatch event
@@ -64,7 +64,7 @@ jobs:
   deploy_facade_function:
     name: Build and Deploy Facade Azure Function   
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }} 
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }} || ${{ github.event_name == 'push' }} 
     # env.RunTestsOnly == 'false'
     env:
       AZURE_FUNCTIONAPP_NAME: ms-lora-function-app
@@ -98,7 +98,7 @@ jobs:
 
   # Deploy IoT Edge solution to ARM gateway
   deploy_arm_gw_iot_edge:
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }} || ${{ github.event_name == 'push' }}
     # env.RunTestsOnly == 'false'
     env:
       CONTAINER_REGISTRY_ADDRESS: "myloramikou.azurecr.io"
