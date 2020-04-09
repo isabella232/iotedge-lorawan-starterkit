@@ -4,6 +4,8 @@ on: # rebuild any PRs and main branch changes
     branches:
       - master
       - 'releases/*'
+  repository_dispatch:
+    types: manual_trigger
 
 env: 
   buildConfiguration: "Release"
@@ -16,6 +18,8 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+
+    - run: echo ${{ github.event.pull_request.labels.*.name }}
 
     # build LoRa Engine
     - name: Build LoRa Engine
