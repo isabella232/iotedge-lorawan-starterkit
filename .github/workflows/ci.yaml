@@ -16,10 +16,15 @@ jobs:
     runs-on: ubuntu-16.04
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') }}
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+      name: Checkout branch pointed by dispatch event
+      if: github.event_name == repository_dispatch
+      with:
+        ref: github.event_name.event.client_payload.target_branch
 
-    - run: echo ${{ github.event.pull_request.labels.*.name }}
+    - uses: actions/checkout@v2
+      name: Checkout current branch
+      if: github.event_name != repository_dispatch
 
     # build LoRa Engine
     - name: Build LoRa Engine
@@ -81,21 +86,30 @@ jobs:
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'LoRaEngine/LoraKeysManagerFacade/'
 
     steps:
-       - uses: actions/checkout@v2     
-       - name: 'Resolve Project Dependencies Using Dotnet'
-         shell: bash
-         run: |
-           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-           dotnet build --configuration Release --output ./output
-           popd
-           
-       - name: 'Run Azure Functions Action'
-         uses: Azure/functions-action@v1
-         id: fa
-         with:
-           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+    - uses: actions/checkout@v2
+      name: Checkout branch pointed by dispatch event
+      if: github.event_name == repository_dispatch
+      with:
+        ref: github.event_name.event.client_payload.target_branch
+
+    - uses: actions/checkout@v2
+      name: Checkout current branch
+      if: github.event_name != repository_dispatch
+
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: bash
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        dotnet build --configuration Release --output ./output
+        popd
+
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 
   # Deploy IoT Edge solution to ARM gateway
   deploy_arm_gw_iot_edge:
@@ -130,8 +144,15 @@ jobs:
     runs-on: ubuntu-latest
     name: Run IoT Edge Deployment on ARM gateway
     steps:  
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        name: Checkout branch pointed by dispatch event
+        if: github.event_name == repository_dispatch
+        with:
+          ref: github.event_name.event.client_payload.target_branch
+  
+      - uses: actions/checkout@v2
+        name: Checkout current branch
+        if: github.event_name != repository_dispatch
 
       - name: Iot Edge Push Solution
         uses: ./devops
@@ -190,24 +211,38 @@ jobs:
     #     echo "::set-output name=action_fruit::t"
     #     echo github.event.pull_request.labels.*.name
 
-    - name: Checkout
-      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+      name: Checkout branch pointed by dispatch event
+      if: github.event_name == repository_dispatch
+      with:
+        ref: ${{ github.event_name.event.client_payload.target_branch }}
+
+    - uses: actions/checkout@v2
+      name: Checkout current branch
+      if: github.event_name != repository_dispatch
+
+    - run: if [ ${{ contains(github.event.client_payload.labels.*.name, matrix.testsToRun) }} == 'true' ] ; then echo 0; else echo 1; fi 
+      if: github.event_name == repository_dispatch
+      name: Check if labels is in dispatch message
+
+    - run: if [ ${{ contains(github.event.pull_request.labels.*.name, matrix.testsToRun) }} == 'true' ] ; then echo 0; else echo 1; fi 
+      if: github.event_name != repository_dispatch
+      name: Check if labels is in PR
 
     - name: 'Configure test in **/test/LoRaWan.IntegrationTest/appsettings.json' 
       uses: cschleiden/replace-tokens@v1
-      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
+      if: Success()
       with:
         files: '**/test/LoRaWan.IntegrationTest/appsettings.json'
     
     # Runs Integration tests
     - name: Build IntegrationTest
-      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
+      if: Success()
       run: dotnet build --configuration ${{ env.buildConfiguration }} **/test/LoRaWan.IntegrationTest/LoRaWan.IntegrationTest.csproj
 
     - name: Integration testing ${{ matrix.testsToRun }}
       id: integration_test
-      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
+      if: Success()
       # if: env.IntegrationTestsToRun == '' || contains(env.IntegrationTestsToRun, '${{ matrix.testsToRun }}')
       run: |
         echo ${{ matrix.testsToRun }}
@@ -215,7 +250,7 @@ jobs:
     
     # Upload test results as artifact
     - uses: actions/upload-artifact@v1
-      if: contains(github.event.pull_request.labels.*.name, matrix.testsToRun)
+      if: Success()
       with:
         name: ${{ matrix.testsToRun }}-results
         path: LoRaEngine/test/LoRaWan.IntegrationTest/TestResults
@@ -224,7 +259,7 @@ jobs:
     #     echo ${{ tojson(steps.integration_test) }}
     #     echo ${{ steps.integration_test.status }}
     - uses: LouisBrunner/checks-action@v0.1.0
-      if: always()
+      if: Success()
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: ${{ matrix.testsToRun }}
