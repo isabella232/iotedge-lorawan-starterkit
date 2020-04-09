@@ -222,11 +222,11 @@ jobs:
       if: github.event_name != 'repository_dispatch'
 
     - run: if [ ${{ contains(github.event.client_payload.labels.*.name, matrix.testsToRun) }} == 'true' ] ; then echo 0; else echo 1; fi 
-      if: github.event_name == repository_dispatch
+      if: github.event_name == 'repository_dispatch'
       name: Check if labels is in dispatch message
 
     - run: if [ ${{ contains(github.event.pull_request.labels.*.name, matrix.testsToRun) }} == 'true' ] ; then echo 0; else echo 1; fi 
-      if: github.event_name != repository_dispatch
+      if: github.event_name != 'repository_dispatch'
       name: Check if labels is in PR
 
     - name: 'Configure test in **/test/LoRaWan.IntegrationTest/appsettings.json' 
