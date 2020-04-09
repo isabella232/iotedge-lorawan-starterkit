@@ -11,12 +11,13 @@ on: # rebuild any PRs and main branch changes
 
 env: 
   buildConfiguration: "Release"
-
+  RunTestsOnly: ${{ contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') || contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }}
+  FullCi: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') }} || ${{ contains(github.event.client_payload.labels.*.name, 'fullci') }} || ${{ github.event_name == 'push' }}
 jobs:
   build_and_test:
     name: Build and Test Solution
     runs-on: ubuntu-16.04
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') }}
+    if: env.RunTestsOnly == 'false'
     steps:
     - uses: actions/checkout@v2
       name: Checkout branch pointed by dispatch event
@@ -62,7 +63,7 @@ jobs:
   deploy_facade_function:
     name: Build and Deploy Facade Azure Function   
     runs-on: ubuntu-16.04
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') }}
+    if: env.RunTestsOnly == 'false'
     env:
       AZURE_FUNCTIONAPP_NAME: ms-lora-function-app
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'LoRaEngine/LoraKeysManagerFacade/'
@@ -95,7 +96,7 @@ jobs:
 
   # Deploy IoT Edge solution to ARM gateway
   deploy_arm_gw_iot_edge:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'RunTestsOnly') && !contains(github.event.client_payload.labels.*.name, 'RunTestsOnly') }}
+    if: env.RunTestsOnly == 'false'
     env:
       CONTAINER_REGISTRY_ADDRESS: "myloramikou.azurecr.io"
       CONTAINER_REGISTRY_SERVER: "myloramikou.azurecr.io"
@@ -193,7 +194,7 @@ jobs:
       - deploy_facade_function
     runs-on: [ self-hosted, x64 ]
     timeout-minutes: 60
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') }}
+    if: FullCi== 'true'
     #if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') }}
     env:      
       INTEGRATIONTEST_LeafDeviceSerialPort: '/dev/ttyACM0'
