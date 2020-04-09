@@ -1,3 +1,5 @@
+name: Add Test Labels
+
 on:
   pull_request: 
     types: [labeled]
