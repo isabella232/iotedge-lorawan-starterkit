@@ -58,26 +58,6 @@ jobs:
         name: unit-test-results
         path: LoRaEngine/test/TestResults
    
-    # Find out if full ci is enabled for Pull Request validation
-    - name: Check for CI label build on PR
-      id: check-label
-      run: |
-        echo "::set-output name=label::abcde" 
-        echo "Looking for label at https://api.github.com/repos/$BUILD_REPOSITORY_ID/issues/$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER/labels"
-        if curl -s "https://api.github.com/repos/$BUILD_REPOSITORY_ID/issues/$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER/labels" | grep '"name": "fullci"'
-        then
-          echo "::set-output name=prWithCILabel::true"       
-          echo "fullci label found!"
-        fi
-      if: github.event_name == 'pull_request'
-   
-    - name: Check label
-      env:
-        label: ${{ steps.check-label.outputs.label }}
-      run: |
-        echo "Label:  " 
-        echo ${{ env.label }}
-   
   # Build and deploy Facade Azure Function
   deploy_facade_function:
     name: Build and Deploy Facade Azure Function   
@@ -165,7 +145,7 @@ jobs:
           IMAGE_TAG="$MASTER_IMAGE_TAG"
           elif [ ${{ github.event_name }}	== "pull_request" ]; then
           echo "pull request"
-          IMAGE_TAG="pr-${{ github.event.number}}-"
+          IMAGE_TAG="pr-${{ github.event.number}}"
           else
           echo "all others"
           IMAGE_TAG="custom-${{ github.ref }}"
