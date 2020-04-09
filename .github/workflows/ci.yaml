@@ -195,7 +195,7 @@ jobs:
       - deploy_facade_function
     runs-on: [ self-hosted, x64 ]
     timeout-minutes: 60
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') }} || ${{ contains(github.event.client_payload.labels.*.name, 'fullci') }} || ${{ github.event_name == 'push' }}
+    if: always()
     #if: ${{ contains(github.event.pull_request.labels.*.name, 'fullci') }}
     env:      
       INTEGRATIONTEST_LeafDeviceSerialPort: '/dev/ttyACM0'
@@ -222,11 +222,11 @@ jobs:
       if: github.event_name != 'repository_dispatch'
 
     - run: if [ ${{ contains(github.event.client_payload.labels.*.name, matrix.testsToRun) }} == 'true' ] ; then echo "::set-env name=run_test::true"; else echo "Skipping test ${{ matrix.testsToRun }}"; fi 
-      if: github.event_name == 'repository_dispatch' && contains(github.event.pull_request.labels.*.name, 'fullci')
+      if: env.FullCi == 'true'
       name: Check if labels is in dispatch message
 
     - run: if [ ${{ contains(github.event.pull_request.labels.*.name, matrix.testsToRun) }} == 'true' ] ; then echo "::set-env name=run_test::true"; else echo "Skipping test ${{ matrix.testsToRun }}"; fi 
-      if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'fullci')
+      if: env.FullCi == 'true'
       name: Check if labels is in PR
 
     - run: echo "::set-env name=run_test::true"
