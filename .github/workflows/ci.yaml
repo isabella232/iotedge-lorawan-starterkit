@@ -159,19 +159,19 @@ jobs:
       - run: |
           if [ ${{ github.ref	}} = "refs/heads/dev" ]; then
           echo "dev"  
-          IMAGE_TAG="$DEV_IMAGE_TAG-"
+          IMAGE_TAG="$DEV_IMAGE_TAG"
           elif [ ${{ github.ref	}} = "refs/heads/master" ]; then
           echo "master"
-          IMAGE_TAG="$MASTER_IMAGE_TAG-"
-          elif [ ${{ github.event_name }}	!= "pull_request" ]; then
+          IMAGE_TAG="$MASTER_IMAGE_TAG"
+          elif [ ${{ github.event_name }}	== "pull_request" ]; then
           echo "pull request"
           IMAGE_TAG="pr-${{ github.event.number}}-"
           else
           echo "all others"
-          IMAGE_TAG="custom-${{ github.ref }}-"
+          IMAGE_TAG="custom-${{ github.ref }}"
           fi
           echo "Using image tag prefix $IMAGE_TAG"
-          IMAGE_TAG="$IMAGE_TAG${{ github.run_number }}"
+          IMAGE_TAG="$IMAGE_TAG-${{ github.run_number }}"
           echo "Using image tag $IMAGE_TAG"
           echo "::set-env name=NET_SRV_VERSION::$IMAGE_TAG"
           echo "::set-env name=PKT_FWD_VERSION::$IMAGE_TAG"
