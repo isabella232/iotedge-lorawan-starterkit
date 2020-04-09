@@ -11,10 +11,9 @@ jobs:
       matrix:
         labelToAdd: [ SensorDecodingTest, OTAAJoinTest, ABPTest, OTAATest, MacTest, ClassCTest, C2DMessageTest, MultiGatewayTests]
     steps:
-    - run: echo ${{ tojson(github) }}
     - name: addlabel_${{ matrix.labelToAdd }}
       uses: buildsville/add-remove-label@v1
-      if: contains(github.event.pull_request.labels.*.name, 'fullci')
+      if: github.event.label.name == 'fullci'
       with:
         token: ${{secrets.GITHUB_TOKEN}}
         label: ${{ matrix.labelToAdd }}
