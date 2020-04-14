@@ -80,7 +80,7 @@ namespace LoRaWan.NetworkServer
                     {
                         AmqpConnectionPoolSettings = new AmqpConnectionPoolSettings()
                         {
-                            Pooling = true,
+                            Pooling = false,
                         }
                     }
                 };

@@ -11,9 +11,7 @@ namespace LoRaWan.Test.Shared
     using LoRaTools.CommonAPI;
     using Microsoft.Azure.Devices;
     using Microsoft.Azure.Devices.Shared;
-    using Microsoft.Azure.EventHubs;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using Xunit;
 
     /// <summary>
@@ -161,7 +159,7 @@ namespace LoRaWan.Test.Shared
                     Console.WriteLine($"Cleanup messages for device {deviceId}");
                     do
                     {
-                        msg = await client.ReceiveAsync();
+                        msg = await client.ReceiveAsync(TimeSpan.FromSeconds(10));
                         if (msg != null)
                         {
                             Console.WriteLine($"found message to cleanup for device {deviceId}");
