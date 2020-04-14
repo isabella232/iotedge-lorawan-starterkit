@@ -157,12 +157,11 @@ namespace LoRaWan.Test.Shared
             {
                 using (var client = Microsoft.Azure.Devices.Client.DeviceClient.CreateFromConnectionString(this.Configuration.IoTHubConnectionString + $";DeviceId={deviceId}", Microsoft.Azure.Devices.Client.TransportType.Amqp))
                 {
-                    await client.OpenAsync();
                     Microsoft.Azure.Devices.Client.Message msg = null;
                     Console.WriteLine($"Cleanup messages for device {deviceId}");
                     do
                     {
-                        msg = await client.ReceiveAsync(new TimeSpan(0, 0, 0, 10));
+                        msg = await client.ReceiveAsync();
                         if (msg != null)
                         {
                             Console.WriteLine($"found message to cleanup for device {deviceId}");
