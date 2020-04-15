@@ -80,7 +80,9 @@ namespace LoRaWan.NetworkServer
                     {
                         AmqpConnectionPoolSettings = new AmqpConnectionPoolSettings()
                         {
-                            Pooling = false,
+                            Pooling = true,
+                            // pool size 1 => 995 devices.
+                            MaxPoolSize = 1,
                         }
                     }
                 };
