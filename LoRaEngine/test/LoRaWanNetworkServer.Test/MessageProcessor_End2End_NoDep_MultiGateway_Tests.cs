@@ -218,9 +218,7 @@ namespace LoRaWan.NetworkServer.Test
             this.LoRaDeviceClient.Setup(x => x.ReceiveAsync(It.IsAny<TimeSpan>()))
                 .ReturnsAsync(cloudToDeviceMessage);
 
-            // C2D message will be abandonned
-            this.LoRaDeviceClient.Setup(x => x.AbandonAsync(cloudToDeviceMessage))
-                .ReturnsAsync(true);
+            // C2D message will be not abandonned
 
             // getting the fcnt down will return 0!
             this.LoRaDeviceApi.Setup(x => x.NextFCntDownAsync(devEUI, initialFcntDown, payloadFcnt, this.ServerConfiguration.GatewayID))
