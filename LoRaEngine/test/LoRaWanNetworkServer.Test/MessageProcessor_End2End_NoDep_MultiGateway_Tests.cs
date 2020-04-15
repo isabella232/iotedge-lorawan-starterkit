@@ -252,7 +252,7 @@ namespace LoRaWan.NetworkServer.Test
             Assert.Equal(unconfirmedMessagePayload.GetFcnt(), loRaDevice.FCntUp);
 
             this.LoRaDeviceClient.Verify(x => x.ReceiveAsync(It.IsAny<TimeSpan>()), Times.Once());
-            this.LoRaDeviceClient.Verify(x => x.AbandonAsync(It.IsAny<Message>()), Times.Once());
+            this.LoRaDeviceClient.Verify(x => x.AbandonAsync(It.IsAny<Message>()), Times.Never());
 
             this.LoRaDeviceClient.VerifyAll();
             this.LoRaDeviceApi.VerifyAll();
