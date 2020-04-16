@@ -312,11 +312,11 @@ namespace LoRaWan.IntegrationTest
             return this.Test_OTAA_Unconfirmed_Receives_Confirmed_FPort_2_Message(nameof(this.TestFixtureCi.Device15_OTAA));
         }
 
-        [RetryFact]
-        public Task Test_OTAA_Unconfirmed_Receives_Confirmed_FPort_2_Message_MultiGw()
-        {
-            return this.Test_OTAA_Unconfirmed_Receives_Confirmed_FPort_2_Message(nameof(this.TestFixtureCi.Device15_OTAA_MultiGw));
-        }
+        // [RetryFact]
+        // public Task Test_OTAA_Unconfirmed_Receives_Confirmed_FPort_2_Message_MultiGw()
+        // {
+        //     return this.Test_OTAA_Unconfirmed_Receives_Confirmed_FPort_2_Message(nameof(this.TestFixtureCi.Device15_OTAA_MultiGw));
+        // }
 
         // Ensures that C2D messages are received when working with unconfirmed messages
         // Uses Device15_OTAA
@@ -446,11 +446,11 @@ namespace LoRaWan.IntegrationTest
             return this.Test_OTAA_Unconfirmed_Receives_Confirmed_C2D_Message(nameof(this.TestFixtureCi.Device14_OTAA));
         }
 
-        [RetryFact]
-        public Task Test_OTAA_Unconfirmed_Receives_Confirmed_C2D_Message_MultiGw()
-        {
-            return this.Test_OTAA_Unconfirmed_Receives_Confirmed_C2D_Message(nameof(this.TestFixtureCi.Device14_OTAA_MultiGw));
-        }
+        // [RetryFact]
+        // public Task Test_OTAA_Unconfirmed_Receives_Confirmed_C2D_Message_MultiGw()
+        // {
+        //     return this.Test_OTAA_Unconfirmed_Receives_Confirmed_C2D_Message(nameof(this.TestFixtureCi.Device14_OTAA_MultiGw));
+        // }
 
         // Ensures that C2D messages are received when working with unconfirmed messages
         // Uses Device10_OTAA
