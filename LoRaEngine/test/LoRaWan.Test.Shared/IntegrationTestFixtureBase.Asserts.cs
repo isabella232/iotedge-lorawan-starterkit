@@ -263,8 +263,8 @@ namespace LoRaWan.Test.Shared
         /// </summary>
         public async Task CheckAnswerTimingAsync(uint rxDelay, bool isSecondWindow, string gatewayId)
         {
-            var upstreamMessageTimingResult = await this.TryFindMessageTimeAsync("rxpk", gatewayId);
-            var downstreamMessageTimingResult = await this.TryFindMessageTimeAsync("txpk", gatewayId);
+            var upstreamMessageTimingResult = await this.TryFindMessageTimeAsync("rawdata", gatewayId, true);
+            var downstreamMessageTimingResult = await this.TryFindMessageTimeAsync("txpk", gatewayId, false);
 
             if (upstreamMessageTimingResult.Success && upstreamMessageTimingResult.Success)
             {
@@ -278,11 +278,21 @@ namespace LoRaWan.Test.Shared
 
         /// <summary>
         /// Helper method to find the time of the message that contain the message argument.
+        /// If it is a upstream message we take iot hub logs as base, as multiple rxpk could arrive at same time.
         /// </summary>
-        async Task<FindTimeResult> TryFindMessageTimeAsync(string message, string sourceIdFilter)
+        async Task<FindTimeResult> TryFindMessageTimeAsync(string message, string sourceIdFilter, bool isUpstream = false)
         {
             const string token = @"""tmst"":";
-            var log = await this.SearchUdpLogs(x => x.Contains(message), new SearchLogOptions { SourceIdFilter = sourceIdFilter });
+            SearchLogResult log;
+            if (isUpstream)
+            {
+                log = await this.SearchIoTHubLogs(x => x.Contains(message), new SearchLogOptions { SourceIdFilter = sourceIdFilter });
+            }
+            else
+            {
+                log = await this.SearchUdpLogs(x => x.Contains(message), new SearchLogOptions { SourceIdFilter = sourceIdFilter });
+            }
+
             int timeIndexStart = log.FoundLogResult.IndexOf(token) + token.Length;
             int timeIndexStop = log.FoundLogResult.IndexOf(",", timeIndexStart);
             uint parsedValue = 0;
