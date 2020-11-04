@@ -20,7 +20,7 @@ namespace LoRaTools.LoRaMessage
         /// <summary>
         /// Gets or sets aka JoinEUI.
         /// </summary>
-        public Memory<byte> AppEUI { get; set; }
+        public Memory<byte> JoinEUI { get; set; }
 
         public Memory<byte> DevEUI { get; set; }
 
@@ -34,7 +34,7 @@ namespace LoRaTools.LoRaMessage
         /// <summary>
         /// Gets the value of AppEUI as <see cref="string"/>.
         /// </summary>
-        public string GetAppEUIAsString() => ConversionHelper.ReverseByteArrayToString(this.AppEUI);
+        public string GetAppEUIAsString() => ConversionHelper.ReverseByteArrayToString(this.JoinEUI);
 
         /// <summary>
         /// Gets the value <see cref="DevNonce"/> as <see cref="string"/>.
@@ -54,7 +54,7 @@ namespace LoRaTools.LoRaMessage
         {
             this.Mhdr = new Memory<byte>(inputMessage, 0, 1);
             // get the joinEUI field
-            this.AppEUI = new Memory<byte>(inputMessage, 1, 8);
+            this.JoinEUI = new Memory<byte>(inputMessage, 1, 8);
             // get the DevEUI
             this.DevEUI = new Memory<byte>(inputMessage, 9, 8);
             // get the DevNonce
@@ -74,7 +74,7 @@ namespace LoRaTools.LoRaMessage
             // message processor reverses both values before getting it
             Array.Reverse(appEUIBytes);
             Array.Reverse(devEUIBytes);
-            this.AppEUI = new Memory<byte>(appEUIBytes);
+            this.JoinEUI = new Memory<byte>(appEUIBytes);
             this.DevEUI = new Memory<byte>(devEUIBytes);
             this.DevNonce = new Memory<byte>(devNonce);
             this.Mic = default(Memory<byte>);
@@ -102,8 +102,8 @@ namespace LoRaTools.LoRaMessage
             var offset = 0;
             this.Mhdr.CopyTo(algoInput);
             offset += this.Mhdr.Length;
-            this.AppEUI.CopyTo(algoInput.Slice(offset));
-            offset += this.AppEUI.Length;
+            this.JoinEUI.CopyTo(algoInput.Slice(offset));
+            offset += this.JoinEUI.Length;
             this.DevEUI.CopyTo(algoInput.Slice(offset));
             offset += this.DevEUI.Length;
             this.DevNonce.CopyTo(algoInput.Slice(offset));
@@ -120,7 +120,7 @@ namespace LoRaTools.LoRaMessage
         {
             List<byte> messageArray = new List<byte>(23);
             messageArray.AddRange(this.Mhdr.ToArray());
-            messageArray.AddRange(this.AppEUI.ToArray());
+            messageArray.AddRange(this.JoinEUI.ToArray());
             messageArray.AddRange(this.DevEUI.ToArray());
             messageArray.AddRange(this.DevNonce.ToArray());
             if (!this.Mic.Span.IsEmpty)

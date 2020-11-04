@@ -159,7 +159,7 @@ namespace LoRaWanTest
             Array.Reverse(joinRequestAppEui);
             Array.Reverse(joinRequestDevEUI);
             Array.Reverse(joinRequestDevNonce);
-            Assert.True(joinRequestMessage.AppEUI.ToArray().SequenceEqual(joinRequestAppEui));
+            Assert.True(joinRequestMessage.JoinEUI.ToArray().SequenceEqual(joinRequestAppEui));
             Assert.True(joinRequestMessage.DevEUI.ToArray().SequenceEqual(joinRequestDevEUI));
             Assert.True(joinRequestMessage.DevNonce.ToArray().SequenceEqual(joinRequestDevNonce));
         }
@@ -303,7 +303,7 @@ namespace LoRaWanTest
             {
                 2, 1,
             };
-            joinReq.AppEUI = new byte[8]
+            joinReq.JoinEUI = new byte[8]
             {
                 1, 2, 3, 4, 5, 6, 7, 8,
             };
