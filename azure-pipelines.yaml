@@ -191,6 +191,8 @@ jobs:
       scriptLocation: 'inlineScript'
       inlineScript: |
         $iotHubName = "$($INTEGRATIONTEST_IOTHUB_NAME)"
+        az config set extension.use_dynamic_install=yes_without_prompt
+        az extension add --name azure-cli-iot-ext
         $json = az iot hub device-identity list --hub-name $iotHubName
         $devices = $json | ConvertFrom-Json
         Foreach ($device in $devices)
