@@ -177,6 +177,41 @@ jobs:
         platform: amd64
         deviceID: $(IoTEdgeDeviceAMD)
 
+- job: full_ci_remove_devices
+  displayName: remove_devices
+  dependsOn: build_and_test
+  condition: and(ne(variables['RunTestsOnly'], 'true'), and(succeeded(), or(eq(dependencies.build_and_test.outputs['checkPrCILabel.prWithCILabel'], true), or(eq(variables['FullCI'],'true'), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/dev')))))
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'IntegrationTestRGNew'
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $iotHubName = "$($INTEGRATIONTEST_IOTHUB_NAME)"
+        $json = az iot hub device-identity list --hub-name $iotHubName
+        $devices = $json | ConvertFrom-Json
+        Foreach ($device in $devices)
+        {
+          az iot hub device-identity delete --device-id $device.deviceId --hub-name $iotHubName
+        }
+        az iot hub invoke-module-method --method-name 'RestartModule' -n $iotHubName -d $($IoTEdgeDeviceARMPrimary) -m '$edgeHub' --method-payload \
+        '
+        {
+            "schemaVersion": "1.0",
+            "id": "edgeHub"
+        }
+        '
+        az iot hub invoke-module-method --method-name 'RestartModule' -n $iotHubName -d $($IoTEdgeDeviceARMSecondary) -m '$edgeHub' --method-payload \
+        '
+        {
+            "schemaVersion": "1.0",
+            "id": "edgeHub"
+        }
+        '
+
 # [Job] Build and deploy Facade Azure Function 
 - job: full_ci_deploy_facade_function
   displayName: Build and deploy Facade Azure Function   
